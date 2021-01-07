@@ -30,5 +30,6 @@ int		compareByCodeOrig(const void* air1, const void* air2);
 int		compareByCodeDest(const void* air1, const void* air2);
 int		compareByHour(const void* air1, const void* air2);
 int		compareByDate(const void* air1, const void* air2);
+int saveFlightToFileCompressed(Flight* pFlight, FILE* fp);
 
 #endif

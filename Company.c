@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 #include "Company.h"
 #include "Airport.h"
 #include "General.h"
@@ -83,11 +84,62 @@ int		addFlight(Company* pComp, const AirportManager* pManager)
 
 void	printCompany(const Company* pComp)
 {
-	printf("Company %s:\n", pComp->name);
-	printf("Has %d flights\n", pComp->flightCount);
+	char* count = (char*)calloc(1,sizeof(int));
+	if (!count)
+		return;
+	sprintf(count, "%d", pComp->flightCount);
+#ifdef DETAIL_PRINT
+	printCompanyVardic("Company",pComp->name, "Has", count,"flights", NULL);
+	//printf("Company %s:\n", pComp->name);
+	//printf("Has %d flights\n", pComp->flightCount);
 	generalArrayFunction((void*)pComp->flightArr, pComp->flightCount, sizeof(Flight**), printFlightV);
 	printf("\nFlight Date List:");
 	L_print(&pComp->flighDateList, printStr);
+#else
+	printCompanyVardic("Company", pComp->name, "Has", count, "flights", NULL);
+#endif
+	free(count);
+}
+
+/*printCompanyVardic
+*	combining unknown strings split by '_';
+*   breaking point = NULL
+*/
+void printCompanyVardic(char* str, ...)
+{
+	/////////calc the combining str length////////////
+	int newSize = 0;
+	va_list strList;
+	va_start(strList, str);
+	char* strCalcLen = str;
+	while (strCalcLen)
+	{
+		newSize += (int)strlen(strCalcLen) + 1;//+1 for '_'
+		strCalcLen = va_arg(strList, char*);
+	}
+	va_end(strList);
+	newSize--;
+	/////////calc the combining str length////////////
+
+	char* combinStr = (char*)malloc(newSize * sizeof(char));
+	strcpy(combinStr, str);
+
+	char* split = "_";
+	va_start(strList, str);
+	char* strToadd = va_arg(strList, char*);
+	while (strToadd)
+	{
+		strcat(combinStr, split);
+		strcat(combinStr, strToadd);
+
+		strToadd = va_arg(strList, char*);
+	}
+
+	va_end(strList);
+	if (combinStr)
+	{
+		printf("\n%s\n", combinStr);
+	}
 }
 
 void	printFlightsCount(const Company* pComp)
@@ -115,7 +167,7 @@ void	printFlightsCount(const Company* pComp)
 	printf("from %s to %s\n", codeOrigin, codeDestination);
 }
 
-int		saveCompanyToFile(const Company* pComp, const char* fileName)
+int	saveCompanyToFile(const Company* pComp, const char* fileName)
 {
 	FILE* fp;
 	fp = fopen(fileName, "wb");
@@ -141,6 +193,27 @@ int		saveCompanyToFile(const Company* pComp, const char* fileName)
 
 	fclose(fp);
 	return 1;
+}
+
+int	saveCompanyToFileCompressed(const Company* pComp, const char* fileName)
+{
+	FILE* fp = fopen(fileName, "wb");
+	if (!fp)//macros
+		return 0;
+	BYTE* buffer = (BYTE*)calloc(SIZE_OF_COMPRESS, sizeof(BYTE));
+	if (!buffer)//macros
+		return 0;
+
+	buffer[0] = (BYTE)pComp->name | 0;
+	buffer[1] = (int)strlen(pComp->name) | pComp->sortOpt << 4 | pComp->flightCount | 1 << 7;
+	buffer[2] = pComp->flightCount | createMask(1, 8);
+	fwrite(buffer, sizeof(BYTE), SIZE_OF_COMPRESS, fp);
+	for (int i = 0; i < pComp->flightCount; i++)
+	{
+		if (!saveFlightToFileCompressed(pComp->flightArr[i], fp))
+			return 0;
+	}
+	return fclose(fp);
 }
 
 int loadCompanyFromFile(Company* pComp, const AirportManager* pManager, const char* fileName)

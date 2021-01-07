@@ -14,4 +14,4 @@ const char* str[eNofOptions];
 #define COMPANY_FILE_NAME "company.bin"
 
 int menu();
-int initManagerAndCompany(AirportManager* pManager, Company* pCompany);
+int initManagerAndCompany(AirportManager* pManager, Company* pCompany, char* airportManager_fileName, char* company_fileName);

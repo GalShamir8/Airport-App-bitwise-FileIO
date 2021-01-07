@@ -11,6 +11,7 @@ char**	splitCharsToWords(char* str,int* pCount,int* pTotalLength);
 void	printStr(const void* str);
 void	freePtr(void* str);
 void	generalArrayFunction(void* arr, int size, int typeSize, void(*func)(void* element));
+unsigned int createMask(int left, int right);
 
 
 

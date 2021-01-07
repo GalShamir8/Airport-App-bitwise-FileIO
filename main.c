@@ -12,12 +12,17 @@ const char* str[eNofOptions] = { "Add Flight", "Add Airport",
 "Sort Flights", "Search Flight" };
 
 
-int main()
+int main(int argc, char* argV[])
 {
+	if (argc != 3)
+		return 0;//Error in main parmeters 
+	char* airportManager_flieName = argV[1];
+	char* company_fileName = argV[2];
+
 	AirportManager	manager;
 	Company			company;
 
-	initManagerAndCompany(&manager, &company);
+	initManagerAndCompany(&manager, &company, airportManager_flieName, company_fileName);
 
 	int option;
 	int stop = 0;
@@ -70,8 +75,8 @@ int main()
 	} while (!stop);
 
 
-	saveManagerToFile(&manager, MANAGER_FILE_NAME);
-	saveCompanyToFile(&company, COMPANY_FILE_NAME);
+	saveManagerToFile(&manager, airportManager_flieName);
+	saveCompanyToFile(&company, company_fileName);
 
 	freeManager(&manager);
 	freeCompany(&company);
@@ -96,9 +101,9 @@ int menu()
 	return option;
 }
 
-int initManagerAndCompany(AirportManager* pManager ,Company* pCompany)
+int initManagerAndCompany(AirportManager* pManager ,Company* pCompany, char* airportManager_flieName, char* company_fileName)
 {
-	int res = initManager(pManager, MANAGER_FILE_NAME);
+	int res = initManager(pManager, airportManager_flieName);
 	if (!res)
 	{
 		printf("error init manager\n");
@@ -106,7 +111,7 @@ int initManagerAndCompany(AirportManager* pManager ,Company* pCompany)
 	}
 
 	if (res == FROM_FILE)
-		return initCompanyFromFile(pCompany,pManager, COMPANY_FILE_NAME);
+		return initCompanyFromFile(pCompany,pManager, company_fileName);
 	else
 		initCompany(pCompany, pManager);
 	return 1;

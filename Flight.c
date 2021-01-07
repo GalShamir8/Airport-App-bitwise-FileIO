@@ -164,3 +164,8 @@ void	freeFlight(void* val)
 	Flight* pFlight = *(Flight**)val;
 	free(pFlight);
 }
+
+int saveFlightToFileCompressed(Flight* pFlight, FILE* fp)
+{
+	return 0;
+}

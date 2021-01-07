@@ -4,10 +4,15 @@
 #include "Flight.h"
 #include "AirportManager.h"
 #include "GeneralList.h"
+#include "MyMacros.h"
+
+#define DETAIL_PRINT
+#define SIZE_OF_COMPRESS 3
 
 typedef enum { eNone, eHour, eDate,eSorceCode,eDestCode, eNofSortOpt } eSortOption;
 static const char* sortOptStr[eNofSortOpt];
 
+typedef unsigned char BYTE;
 
 typedef struct
 {
@@ -35,6 +40,15 @@ void	findFlight(const Company* pComp);
 eSortOption showSortMenu();
 
 void	freeCompany(Company* pComp);
+/*printCompanyVardic
+*	combining unknown strings split by '_';
+*   breaking point = NULL
+*/
+void printCompanyVardic(char* str, ...);
+
+int	saveCompanyToFileCompressed(const Company* pComp, const char* fileName);
+
+
 
 #endif
 

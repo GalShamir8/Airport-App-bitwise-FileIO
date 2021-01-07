@@ -89,3 +89,15 @@ void generalArrayFunction(void* arr, int size, int typeSize, void(*func)(void* e
 		func((char*)(arr)+i*typeSize);
 
 }
+
+unsigned int createMask(int left, int right)
+{
+	int temp;
+	if (left < right)
+	{
+		temp = left;
+		left = right;
+		right = temp;
+	}
+	return (1 << (left + 1)) - (1 << right);
+}
